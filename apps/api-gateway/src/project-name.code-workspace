@@ -1,0 +1,11 @@
+{
+	"folders": [
+		{
+			"path": "../../../../LEARNING/NESTJS/project-name"
+		},
+		{
+			"path": "../../.."
+		}
+	],
+	"settings": {}
+}

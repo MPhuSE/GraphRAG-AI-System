@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+package ai;
+
+// Định nghĩa Service và các hàm
+service AiService {
+  rpc AskQuestion (QuestionRequest) returns (AnswerResponse);
+}
+
+// Cấu trúc dữ liệu gửi đi
+message QuestionRequest {
+  string question = 1;
+}
+
+// Cấu trúc dữ liệu nhận về
+message AnswerResponse {
+  string answer = 1;
+}

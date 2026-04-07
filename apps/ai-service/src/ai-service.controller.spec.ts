@@ -1,6 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AiServiceController } from './ai-service.controller';
-import { AiServiceService } from './ai-service.service';
 
 describe('AiServiceController', () => {
   let aiServiceController: AiServiceController;
@@ -8,15 +7,18 @@ describe('AiServiceController', () => {
   beforeEach(async () => {
     const app: TestingModule = await Test.createTestingModule({
       controllers: [AiServiceController],
-      providers: [AiServiceService],
     }).compile();
 
     aiServiceController = app.get<AiServiceController>(AiServiceController);
   });
 
-  describe('root', () => {
-    it('should return "Hello World!"', () => {
-      expect(aiServiceController.getHello()).toBe('Hello World!');
+  describe('askQuestion', () => {
+    it('should return the AI response payload', () => {
+      expect(
+        aiServiceController.askQuestion({ question: 'NestJS la gi?' }),
+      ).toEqual({
+        answer: 'AI đã nhận được câu hỏi: NestJS la gi?',
+      });
     });
   });
 });

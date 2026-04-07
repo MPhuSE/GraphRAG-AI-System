@@ -1,12 +1,10 @@
-import { Controller, Get } from '@nestjs/common';
-import { AiServiceService } from './ai-service.service';
+import { Controller } from '@nestjs/common';
+import { GrpcMethod } from '@nestjs/microservices';
 
 @Controller()
 export class AiServiceController {
-  constructor(private readonly aiServiceService: AiServiceService) {}
-
-  @Get()
-  getHello(): string {
-    return this.aiServiceService.getHello();
+  @GrpcMethod('AiService', 'AskQuestion')
+  askQuestion(data: { question: string }) {
+    return { answer: `AI đã nhận được câu hỏi: ${data.question}` };
   }
 }
