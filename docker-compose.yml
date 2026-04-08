@@ -1,0 +1,33 @@
+services:
+  # 1. Graph Database: Lưu lộ trình, mối quan hệ môn học
+  neo4j:
+    image: neo4j:latest
+    container_name: neo4j_db
+    ports:
+      - "7474:7474" 
+      - "7687:7687" 
+    environment:
+      - NEO4J_AUTH=neo4j/password123
+      - NEO4J_PLUGINS=["apoc"]
+    volumes:
+      - ./data/neo4j/data:/data
+      - ./data/neo4j/logs:/logs
+    networks:
+      - ai_network
+
+  # 2. Vector Database: Lưu Embedding tài liệu Data Science
+  chromadb:
+    image: chromadb/chroma:latest
+    container_name: chroma_db
+    ports:
+      - "8000:8000" 
+    environment:
+      - IS_PERSISTENT=TRUE 
+    volumes:
+      - ./data/chroma:/index_data
+    networks:
+      - ai_network
+
+networks:
+  ai_network:
+    driver: bridge

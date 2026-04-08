@@ -9,4 +9,9 @@ export class KnowledgeServiceController {
   getHello(): string {
     return this.knowledgeServiceService.getHello();
   }
+
+  @Get('health/db')
+  async checkDatabaseConnections() {
+    return this.knowledgeServiceService.checkDatabaseConnections();
+  }
 }
