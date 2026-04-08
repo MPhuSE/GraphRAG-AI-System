@@ -1,17 +1,19 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, ServiceUnavailableException } from '@nestjs/common';
 import { KnowledgeServiceService } from './knowledge-service.service';
 
 @Controller()
 export class KnowledgeServiceController {
   constructor(private readonly knowledgeServiceService: KnowledgeServiceService) {}
 
-  @Get()
-  getHello(): string {
-    return this.knowledgeServiceService.getHello();
-  }
-
+  // Kiểm tra kết nối db !!!
   @Get('health/db')
   async checkDatabaseConnections() {
-    return this.knowledgeServiceService.checkDatabaseConnections();
+    const result = await this.knowledgeServiceService.checkDatabaseConnections();
+
+    if (result.status === 'error') {
+      throw new ServiceUnavailableException(result);
+    }
+
+    return result;
   }
 }

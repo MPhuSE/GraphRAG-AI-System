@@ -9,9 +9,7 @@ export class KnowledgeServiceService {
     private readonly vectorService: VectorService,
   ) {}
 
-  getHello(): string {
-    return 'Hello World!';
-  }
+  
 
   async checkDatabaseConnections() {
     const [neo4j, chroma] = await Promise.allSettled([
