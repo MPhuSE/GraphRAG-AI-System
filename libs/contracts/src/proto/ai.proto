@@ -12,7 +12,19 @@ message QuestionRequest {
   string question = 1;
 }
 
-// Cấu trúc dữ liệu nhận về
+message AnswerSource {
+  string id = 1;
+  string title = 2;
+  string source = 3;
+  string topic = 4;
+  string excerpt = 5;
+  string uri = 6;
+  double score = 7;
+}
+
 message AnswerResponse {
   string answer = 1;
+  repeated AnswerSource sources = 2;
+  bool grounded = 3;
+  string retrievalStrategy = 4;
 }

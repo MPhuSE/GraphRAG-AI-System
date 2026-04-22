@@ -1,0 +1,9 @@
+Unit Test (Kiểm thử đơn vị) là một mức độ kiểm thử phần mềm với mục đích để xác nhận từng đơn vị của phần mềm được phát triển hoạt động đúng như thiết kế. Một đơn vị (Unit) là thành phần nhỏ nhất có thể kiểm thử được của một phần mềm. Nó thường thực hiện một chức năng đơn lẻ.
+
+Lợi ích của Unit test:
+1. Giúp phát hiện lỗi sớm: Lập trình viên có thể tìm thấy lỗi trong quá trình viết mã thay vì đợi đến khi hệ thống được tích hợp xong.
+2. Dễ dàng tái cấu trúc (Refactoring): Khi có unit test bảo vệ, chúng ta có thể thoải mái sửa đổi code mà không sợ làm hỏng các logic cũ.
+3. Tài liệu sống: Các test case đóng vai trò như một bộ tài liệu cho các hàm và module của hệ thống.
+
+Mối liên hệ: 
+Unit Test là một phần của quy trình Software Engineering. Nó thường được tích hợp vào luồng CI/CD để đảm bảo chất lượng liên tục. Unit Test đi đôi chặt chẽ với phương pháp lập trình TDD (Test-Driven Development).

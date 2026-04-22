@@ -1,98 +1,180 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# AI System RAG for Software Engineering
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+NestJS monorepo cho mot he thong RAG thuc te theo mien tri thuc Software Engineering.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## Kien truc
 
-## Description
+- `apps/api-gateway`: HTTP entrypoint, expose `GET /chat?q=...`
+- `apps/ai-service`: gRPC service, retrieve context tu knowledge-service roi moi goi Ollama
+- `apps/knowledge-service`: ingest, chunk, embed, vector search, graph enrichment
+- `libs/contracts`: proto contract dung chung cho gRPC
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+Luong chay:
 
-## Project setup
+1. Client goi `api-gateway`
+2. `api-gateway` goi `ai-service` qua gRPC
+3. `ai-service` goi `knowledge-service` de retrieve context va source
+4. `ai-service` prompt Ollama bang context da grounding
+5. Ket qua tra ve gom `answer`, `sources`, `grounded`, `retrievalStrategy`
 
-```bash
-$ npm install
+## Ha tang can co
+
+- Node.js 22+
+- Docker
+- Ollama dang chay local
+- Neo4j
+- ChromaDB
+
+## Bien moi truong
+
+Root `.env` dang duoc dung boi `ai-service` va `knowledge-service`.
+
+Can co toi thieu:
+
+```env
+NEO4J_HOST=localhost
+NEO4J_PORT=7687
+CHROMA_HOST=localhost
+CHROMA_PORT=8000
+OLLAMA_BASE_URL=http://127.0.0.1:11434
+OLLAMA_MODEL=llama3:latest
+OLLAMA_EMBED_MODEL=nomic-embed-text
+OLLAMA_TIMEOUT_MS=120000
+OLLAMA_TEMPERATURE=0.2
+OLLAMA_NUM_PREDICT=128
+KNOWLEDGE_COLLECTION_NAME=se_knowledge_base
+KNOWLEDGE_SERVICE_BASE_URL=http://127.0.0.1:3001
+KNOWLEDGE_TOP_K=4
 ```
 
-## Compile and run the project
+`apps/knowledge-service/.env` giu `NEO4J_USERNAME` va `NEO4J_PASSWORD`.
 
-```bash
-# development
-$ npm run start
+## Cach chay
 
-# watch mode
-$ npm run start:dev
+### 1. Cai dependency
 
-# production mode
-$ npm run start:prod
+```powershell
+npm.cmd install
 ```
 
-## Run tests
+### 2. Khoi dong Neo4j va ChromaDB
 
-```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+```powershell
+docker compose up -d neo4j chromadb
 ```
 
-## Deployment
+### 3. Khoi dong Ollama va model
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
-
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
-
-```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
+```powershell
+ollama serve
+ollama pull llama3:latest
+ollama pull nomic-embed-text
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+### 4. Chay 3 service
 
-## Resources
+Mo 3 terminal rieng:
 
-Check out a few resources that may come in handy when working with NestJS:
+```powershell
+npm.cmd run start:knowledge-service:dev
+npm.cmd run start:ai-service:dev
+npm.cmd run start:api-gateway:dev
+```
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+## Nap kho tri thuc mau
 
-## Support
+Repo co seed Software Engineering co san. Sau khi `knowledge-service` chay:
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+```http
+POST http://localhost:3001/knowledge/bootstrap
+```
 
-## Stay in touch
+Hoac ingest tai lieu rieng:
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+```http
+POST http://localhost:3001/knowledge/documents
+Content-Type: application/json
 
-## License
+{
+  "documents": [
+    {
+      "title": "Testing Basics",
+      "source": "Internal Handbook",
+      "topic": "software-testing",
+      "content": "Unit tests validate small isolated behavior...",
+      "tags": ["unit test", "regression test"]
+    }
+  ]
+}
+```
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+## API chinh
+
+### Health
+
+```http
+GET http://localhost:3001/health/db
+```
+
+### Retrieve
+
+```http
+POST http://localhost:3001/knowledge/retrieve
+Content-Type: application/json
+
+{
+  "query": "unit test dung de lam gi?",
+  "topK": 4
+}
+```
+
+### Chat
+
+```http
+GET http://localhost:3000/chat?q=unit%20test%20dung%20de%20lam%20gi
+```
+
+Vi du response:
+
+```json
+{
+  "answer": "Unit test dung de kiem tra tung don vi hanh vi rieng le va giup phat hien loi som [Nguon 1].",
+  "sources": [
+    {
+      "id": "software-testing-software-testing-strategy:chunk:0",
+      "title": "Software Testing Strategy",
+      "source": "SE Handbook",
+      "topic": "software-testing",
+      "excerpt": "Unit tests check small isolated pieces of behavior.",
+      "score": 0.92
+    }
+  ],
+  "grounded": true,
+  "retrievalStrategy": "vector+keyword+graph-rerank"
+}
+```
+
+## Kiem tra
+
+```powershell
+npm.cmd run build
+npm.cmd test -- --runInBand
+```
+
+## Tinh nang hien co
+
+- ingest tai lieu SE
+- chunking va embedding bang Ollama
+- luu vector vao ChromaDB
+- tao graph concept co ban trong Neo4j
+- retrieve theo vector + keyword + graph rerank
+- grounded generation co source
+
+## Viec nen lam tiep neu dua vao production
+
+- auth va tenant isolation
+- async ingestion jobs
+- admin UI cho document lifecycle
+- evaluation dataset va observability
+- reranker model rieng
+- streaming response va cache
